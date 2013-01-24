@@ -1,5 +1,8 @@
-
+	var hasLocalStorage = "localStorage" in window && window["localStorage"] !== null;
 	//snakeGame.init();
+	/* high score delimiters are as follows
+		<score>-<HH:MM:SS>-<MM/DD/YYYY>|<score>...
+	*/
 	var overlayScreen = (function(){
 		var overlayScreen = $("#overlayContainer"),
 			titleScreen = $(".screen.title"),
@@ -7,6 +10,10 @@
 			instructionsScreen = $(".screen.instructions"),
 			numberScreen = $(".screen.number"),
 			gameoverScreen = $(".screen.gameover"),
+			highscoresScreen = $(".screen.highscores"),
+			feedback = $("#feedback"),
+			feedbackTimer = null,
+			currentScore = -1,
 			playerTemplate = $(".player").detach()
 			sidebar = $("#sidebar"),
 			currentScreen = "title",
@@ -23,6 +30,55 @@
 				//also update unicode
 				elem.find(".unicode span").html(keyCode);
 		}
+		function showFeedback(text, clss){
+			feedbackTimer = window.clearTimeout(feedbackTimer);
+			feedback.removeClass().addClass(clss).html(text).show();
+			feedbackTimer = window.setTimeout(function(){feedback.fadeOut();}, 10000);
+		}
+		function getHighScores(){
+			var hs = [];
+			if(hasLocalStorage){
+				var highScores = localStorage.getItem("highscores");
+				if(highScores == null){
+					//no high scores set
+					return hs;
+				}
+				//split it up			
+				var iscore = highScores.split("|"); //individual score
+				
+				for(var i = 0; i < iscore.length; i++){
+					var parts = iscore[i].split("-");
+					//first part is actual score
+					var objScore = {};
+					objScore.score = parts[0];
+					objScore.time = parts[1];
+					objScore.date = parts[2];
+					hs.push(objScore);
+				}
+			}
+			else{
+				showFeedback("You must have a browser which supports local storage to save scores", "error");
+			}
+			return hs;
+		}
+		function writeHighScores(hs){
+			var output = "";
+			if(hasLocalStorage){
+			for(var i = 0; i < hs.length; i++){
+				output += "|" + hs[i].score + "-" + hs[i].time + "-" + hs[i].date;
+			}
+			if(output.length > 0)
+				output = output.substring(1);
+			console.log(output);
+			localStorage.setItem("highscores", output);
+			}
+			else{
+				showFeedback("You must have a browser which supports local storage to save scores", "error");
+			}
+
+		}
+
+
 
 		function showScreen(screenName){
 			switch(screenName){
@@ -64,6 +120,25 @@
 					});
 
 				break;
+				case "gameover":
+					if(gameSettings.gameType == "single"){
+						gameoverScreen.find("li[data-action=submit]").show();
+					}
+				break;
+				case "highscores":
+					//clear the high scores
+					highscoresScreen.find("ol li").detach();
+					//set the high scores
+					var hs = getHighScores();
+					var list = highscoresScreen.find("ol");	
+					if(hs.length == 0){
+						showFeedback("You have no scores set yet, go play!", "error");
+					}
+					for(var i = 0; i < hs.length; i++){
+						list.append("<li>" + hs[i].score + " on " + hs[i].date + " at " + hs[i].time + "</li>");	
+					}
+				break;
+
 			}
 			currentScreen = screenName;
 			$(".screen." + screenName).show();
@@ -114,7 +189,10 @@
 					hideScreen("title");
 					showScreen("instructions");
 				break;
-
+				case "highscores":
+					hideScreen("title");
+					showScreen("highscores");
+				break;
 			}
 			return false;
 		});
@@ -130,7 +208,7 @@
 					snakeGame.init(gameSettings);
 				break;
 			}
-			return false;
+			return false
 		});
 
 		numberScreen.find("*[data-action]").bind("click",  function(e){
@@ -167,6 +245,54 @@
 					hideScreen("gameover");
 					showScreen("title");
 				break;
+				case "submit":
+					//add to localstorage
+
+					if(hasLocalStorage){
+
+						//remove button
+						gameoverScreen.find("li[data-action=submit]").hide();
+						
+						if(currentScore == -1){
+							return;//ignore
+						}
+						var highscores = getHighScores();
+						//find the date 
+						var d = new Date();
+						var cur = {
+							score: currentScore,
+							date: "" + (d.getMonth()+1) + "/" + d.getDay() + "/" + d.getFullYear(),
+							time: "" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
+						};
+						var added=false;
+
+						//linear search
+						console.log("Length: " + highscores.length);
+						for(var i = 0; i < highscores.length; i++){
+							if(currentScore > highscores[i].score){
+								console.log("HERE!");
+								highscores.splice(i, 0, cur);
+								added=true;
+								break;
+							}
+						}
+
+						if(!added){
+							highscores.push(cur);
+							added=true;
+						}
+							
+						if(highscores.length >= 10){
+							//truncate
+							highscores.splice(10, highscores.length - 10);	
+						}
+
+						writeHighScores(highscores);
+						showFeedback("Your high score has been set", "success");	
+					}
+					else{
+					}
+				break;
 			}
 		});
 
@@ -193,7 +319,7 @@
 			gameoverScreen.find(".msg").html(data.message);
 			showScreen("gameover");
 			overlayScreen.show();
-			console.log(data);
+			currentScore = data.score;
 		}
 		//subscribe to the gameover event
 		snakeGame.subscribe(onGameover, "gameover");

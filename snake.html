@@ -286,12 +286,33 @@
 	.screen.gameover ul{
 		margin-top: 10px;
 	}
+	#feedback{
+		padding: 5px;
+		position: absolute;
+		z-index: 10;
+		display: none;
+		top: 0px;
+		left: 0px;
+	}
+#feedback.success{
+	color: #093;
+}
+#feedback.error{
+	color: #500;
+}
+.screen.highscores ol li{
+	font-size: 16px;
+}
+.screen.highscores ol{
+	padding-left: 20px;
+}
 	</style>
 </head>
 <body>
 <div id="container">
 
 	<div id="overlayContainer">
+		<p id="feedback">Feedback</p>
 		<div data-screen="title" class="title screen">
 			<h1>Snake</h1>
 			<h2>Just another snake game</h2>
@@ -307,8 +328,8 @@
 				<li data-action="instructions">Instructions
 					<p>Learn how to play</p>
 				</li>
-				<li data-action="high_scores">High Scores
-					<p>View the top scores of snake single player</p>
+				<li data-action="highscores">High Scores
+					<p>View your personal top scores</p>
 				</li>
 			</ul>
 		</div><!--/title -->
@@ -352,6 +373,18 @@
 				<a href="" class="continue" data-action="continue">Continue</a>
 			</div>
 		</div><!--/number -->
+		<div data-screen="highscores" class="highscores screen">
+			<h1>Your Top 10</h1>
+			<ol>
+				<li>10 set 1/23/2013 at 9:36pm</li>
+				<li>8</li>
+				<li>1</li>
+			</ol>
+		<div class="bottom">
+			<a href="" class="back" data-action="back">Back</a>
+		</div>
+
+		</div><!--/high_scores -->
 		<div data-screen="instructions" class="instructions screen">
 			<h1>To Play:</h1>
 			<h2>Single Player</h2>
@@ -376,7 +409,7 @@
 					Submit Score
 				</li>
 				<li data-action="new">
-					New Game
+					Main Menu
 				</li>
 			</ul>
 

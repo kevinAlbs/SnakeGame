@@ -1,3 +1,4 @@
+		
 	var snakeGame = (function(){
 		var canvas = document.getElementById("game"),
 			ctx = canvas.getContext("2d"),
@@ -24,9 +25,10 @@
 		function showStatus(msg){
 			console.log(msg);
 		}
-		function endGame(msg){
+		function endGame(msg, score){
 			var data = {
-				message: msg
+				message: msg,
+				score: score
 			};
 
 			publish('gameover', data);
@@ -129,12 +131,12 @@
 				snakes.splice(_.indexOf(snakes, markedForDeletion[i]), 1);
 				if(snakes.length == 1){
 					//multiple players are playing, this is the last one, this one wins
-					endGame("Player " + (snakes[0].snakeIndex + 1) + " wins");
+					endGame("Player " + (snakes[0].snakeIndex + 1) + " wins", -1);
 					break;
 				}
 				else if(snakes.length == 0){
 					//must be one player
-					endGame("Your score: " + singleScore);
+					endGame("Your score: " + singleScore, singleScore);
 					break;
 				}
 				else{
