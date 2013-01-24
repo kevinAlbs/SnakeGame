@@ -3,4 +3,4 @@ snakeGame
 
 My take on the classic snake game done with JS
 
-Demo will be added shortly.
+[View the demo here](http://mysnake.herokuapp.com)
