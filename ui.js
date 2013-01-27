@@ -35,6 +35,10 @@
 			feedback.removeClass().addClass(clss).html(text).show();
 			feedbackTimer = window.setTimeout(function(){feedback.fadeOut();}, 10000);
 		}
+		function hideFeedback(){
+			feedbackTimer = window.clearTimeout(feedbackTimer);
+			feedback.hide();
+		}
 		function getHighScores(){
 			var hs = [];
 			if(hasLocalStorage){
@@ -145,6 +149,7 @@
 		}
 
 		function hideScreen(screenName){
+			hideFeedback();
 			switch(screenName){
 				case "controls":
 					//unbind events
@@ -261,7 +266,7 @@
 						var d = new Date();
 						var cur = {
 							score: currentScore,
-							date: "" + (d.getMonth()+1) + "/" + d.getDay() + "/" + d.getFullYear(),
+							date: "" + (d.getMonth()+1) + "/" + d.getDate() + "/" + d.getFullYear(),
 							time: "" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
 						};
 						var added=false;
