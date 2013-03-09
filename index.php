@@ -429,7 +429,10 @@
 		</ul>
 	</div>
 	<canvas id="game" width="800" height="600"></canvas>
-	
+	<footer id="pageFooter">
+		<small>Developed by <a href="http://kevinalbs.com" target="_blank">Kevin Albertson</a></small><br/>
+		<small>View the source on <a href="https://github.com/kevinAlbs/snakeGame" target="_blank">Github</a></small>
+	</footer>
 </div>
 <script src="jquery.js"></script>
 <script src="underscore.js"></script>
