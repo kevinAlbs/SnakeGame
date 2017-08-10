@@ -1,6 +1,6 @@
-snakeGame
-=========
+Snake
+=====
 
 My take on the classic snake game done with JS
 
-[View the demo here](http://mysnake.herokuapp.com)
+[View the demo here](http://kevinalbs.com/snake)
